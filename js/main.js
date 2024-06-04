@@ -6,7 +6,7 @@ $svg=$svg.removeAttr('xmlns:a');$img.replaceWith($svg);},'xml');});new WOW().ini
 
 
 
-async function fetchAirtableData() {
+async function fetchAirtableTutorData() {
     const url = "https://api.airtable.com/v0/appA8DCBSHKzihk5Q/Tutorials?maxRecords=3&view=Grid%20view";
     const options = {
         headers: {
@@ -20,13 +20,13 @@ async function fetchAirtableData() {
             throw new Error(`Error: ${response.statusText}`);
         }
         const data = await response.json();
-        populateTutorials(data.records);
+        populateTutorialsData(data.records);
     } catch (error) {
         console.error("Error fetching Airtable data:", error);
     }
 }
 
-function populateTutorials(records) {
+function populateTutorialsData(records) {
     const gridContainer = document.querySelector('#tutor');
 
     records.forEach(record => {
@@ -73,6 +73,72 @@ function populateTutorials(records) {
         `;
 
         gridContainer.appendChild(colDiv);
+    });
+}
+
+// Call the function to fetch and populate data
+fetchAirtableTutorData();
+
+
+
+async function fetchAirtableData() {
+    const url = "https://api.airtable.com/v0/apposCuwJaaAkih6b/Blogs?maxRecords=3&view=Grid%20view";
+    const options = {
+        headers: {
+            "Authorization": "Bearer patjeGuqLi5TpHSbH.6e407b6148fcf2943b6d3345837e63b653314797dbae1427abaa777c97614499"
+        }
+    };
+
+    try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+        }
+        const data = await response.json();
+        populateNews(data.records);
+    } catch (error) {
+        console.error("Error fetching Airtable data:", error);
+    }
+}
+
+function populateNews(records) {
+    const rowContainer = document.querySelector('#blog');
+
+    records.forEach(record => {
+        const { fields } = record;
+        if (!fields.image || !fields.title || !fields.shortdetails) {
+            return;
+        }
+
+        const imageUrl = fields.image[0].url;
+        const title = fields.title;
+        const shortDetails = fields.shortdetails;
+        const author = fields.author;
+
+        const colDiv = document.createElement('div');
+        colDiv.className = 'col-lg-4 col-md-6 col-12';
+
+        colDiv.innerHTML = `
+            <div class="single-news">
+                <div class="image">
+                    <a href="javascript:void(0)">
+                        <img class="thumb" src="${imageUrl}" alt="Blog">
+                    </a>
+                    <div class="meta-details">
+                        <img class="thumb" src="${imageUrl}" alt="Author">
+                        <span>BY ${author.toUpperCase()}</span>
+                    </div>
+                </div>
+                <div class="content-body">
+                    <h4 class="title">
+                        <a href="javascript:void(0)">${title}</a>
+                    </h4>
+                    <p>${shortDetails}</p>
+                </div>
+            </div>
+        `;
+
+        rowContainer.appendChild(colDiv);
     });
 }
 
